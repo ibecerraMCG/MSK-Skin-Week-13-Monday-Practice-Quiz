@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 13 Monday Practice Quiz</title>
+    <style>
+        /* --- Color Variables --- */
+        :root {
+            /* Default: Dark Theme */
+            --bg-color: #2d343e;
+            /* Dark background */
+            --container-bg: #3c424f;
+            /* Slightly lighter container */
+            --text-color: #e8e6e3;
+            /* Light text */
+            --question-text-color: #8ab4f8;
+            /* Light blue for questions */
+            --lo-text-color: #b0c4de;
+            /* Lighter blue for learning objective */
+            --border-color: #555;
+            /* Darker borders */
+            --separator-color: #4a4f5a;
+            --label-bg: #454c5a;
+            --label-border: #6c757d;
+            --label-hover-bg: #525966;
+            --label-hover-border: #7a828a;
+            --button-bg: #8ab4f8;
+            --button-text: #202124;
+            --button-hover-bg: #a3c5f9;
+            --button-disabled-bg: #5f6368;
+            --feedback-correct-bg: #344e41;
+            --feedback-correct-text: #c7f9cc;
+            --feedback-correct-border: #52b788;
+            --feedback-incorrect-bg: #5e2129;
+            --feedback-incorrect-text: #f8d7da;
+            --feedback-incorrect-border: #a4133c;
+            --feedback-rationale-text: #adb5bd;
+            /* Lighter gray for rationale */
+            --feedback-source-text: #c7d3e0;
+            --feedback-separator: #6c757d;
+            --radio-accent: #8ab4f8;
+        }
+
+        .light-theme {
+            --bg-color: #eef2f7;
+            --container-bg: #ffffff;
+            --text-color: #343a40;
+            --question-text-color: #0056b3;
+            --lo-text-color: #5a6e8a;
+            --border-color: #dee2e6;
+            --separator-color: #e9ecef;
+            --label-bg: #f8f9fa;
+            --label-border: #ced4da;
+            --label-hover-bg: #e2e6ea;
+            --label-hover-border: #adb5bd;
+            --button-bg: #007bff;
+            --button-text: white;
+            --button-hover-bg: #0056b3;
+            --button-disabled-bg: #6c757d;
+            --feedback-correct-bg: #d1e7dd;
+            --feedback-correct-text: #0f5132;
+            --feedback-correct-border: #badbcc;
+            --feedback-incorrect-bg: #f8d7da;
+            --feedback-incorrect-text: #842029;
+            --feedback-incorrect-border: #f5c2c7;
+            --feedback-rationale-text: #495057;
+            --feedback-source-text: #343a40;
+            --feedback-separator: #ccc;
+            --radio-accent: #007bff;
+        }
+
+        /* --- General Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.7;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 40px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #theme-toggle-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 12px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--label-border);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            z-index: 1000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #theme-toggle-button:hover {
+            opacity: 0.8;
+        }
+
+        #quiz-container {
+            max-width: 900px;
+            margin: 80px auto 30px auto;
+            background: var(--container-bg);
+            padding: 25px 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .question-block {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--separator-color);
+            transition: border-color 0.3s;
+        }
+
+        .question-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 5px;
+        }
+
+        .learning-objective {
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--lo-text-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--separator-color);
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 18px;
+            color: var(--question-text-color);
+            transition: color 0.3s;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--label-border);
+            background-color: var(--label-bg);
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+
+        .options label:hover {
+            background-color: var(--label-hover-bg);
+            border-color: var(--label-hover-border);
+        }
+
+        .options input[type="radio"]:checked+span {
+            font-weight: bold;
+            color: var(--question-text-color);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--radio-accent);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .check-button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .check-button:hover {
+            opacity: 0.85;
+        }
+
+        .check-button:disabled {
+            background-color: var(--button-disabled-bg);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            display: none;
+            border: 1px solid transparent;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .feedback.correct {
+            background-color: var(--feedback-correct-bg);
+            color: var(--feedback-correct-text);
+            border-color: var(--feedback-correct-border);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: var(--feedback-incorrect-bg);
+            color: var(--feedback-incorrect-text);
+            border-color: var(--feedback-incorrect-border);
+            display: block;
+        }
+
+        .feedback-status {
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .feedback-rationale {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--feedback-separator);
+            font-size: 0.9em;
+            color: var(--feedback-rationale-text);
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .feedback-source {
+            margin-top: 10px;
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--feedback-source-text);
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--question-text-color);
+            margin-top: 30px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle-button">Toggle Theme</button>
+    <h1>Week 13 Monday Practice Quiz</h1>
+    <div id="quiz-container">
+        <!-- Questions will be loaded here by JavaScript -->
+    </div>
+    <script>
+        const quizData = [
+            // Pectoral Region and Axilla Questions
+            {
+                learningObjective: "LO 1 (Pectoral Region and Axilla): Identify the bones and their major features associated with the pectoral region, including the ribs, sternum, clavicle, scapula, and proximal humerus.",
+                question: "A 45-year-old man presents to the emergency department after a direct blow to the chest during a hockey game. On physical examination, a palpable step-off is noted in the midline of his sternum. The physician identifies this landmark and uses it to begin counting the ribs to assess for fractures. This landmark is formed by the articulation of the manubrium and the body of the sternum. Which pair of ribs articulates at this level?",
+                options: {
+                    A: "1st pair of ribs",
+                    B: "2nd pair of ribs",
+                    C: "3rd pair of ribs",
+                    D: "4th pair of ribs"
+                },
+                correctAnswer: "B",
+                rationale: "The sternal angle (of Louis) is an important clinical landmark located at the junction of the manubrium and the body of the sternum. It is the site of articulation for the 2nd pair of ribs and is used as a starting point for counting ribs.",
+                source: "'Sternal angle (of Louis) - Important landmark - Articulates with 2nd ribs' (Pectoral Region and Axilla, Page 9)"
+            },
+            {
+                learningObjective: "LO 1 (Pectoral Region and Axilla): Identify the bones and their major features associated with the pectoral region, including the ribs, sternum, clavicle, scapula, and proximal humerus.",
+                question: "A 22-year-old football player is tackled and falls directly onto the point of his shoulder. He reports severe pain and is unable to lift his arm. An X-ray reveals a fracture of the most lateral portion of the scapula that extends anteriorly from the scapular spine. This bony prominence articulates with the clavicle. Which structure has been fractured?",
+                options: {
+                    A: "Coracoid process",
+                    B: "Glenoid fossa",
+                    C: "Acromion process",
+                    D: "Superior angle of the scapula"
+                },
+                correctAnswer: "C",
+                rationale: "The acromion is the most lateral portion of the scapula, extending anteriorly from the spine. It forms the 'point of the shoulder' and articulates with the clavicle at the acromioclavicular joint.",
+                source: "'Acromion – most lateral portion of the scapula that extends anteriorly from the spine of the scapula (G. \"point of the shoulder\")' (Pectoral Region and Axilla, Page 76)"
+            },
+            {
+                learningObjective: "LO 1 (Pectoral Region and Axilla): Identify the bones and their major features associated with the pectoral region, including the ribs, sternum, clavicle, scapula, and proximal humerus.",
+                question: "A 30-year-old woman is involved in a motor vehicle collision where her chest strikes the steering wheel. She has pain over the middle of her clavicle. The physician is concerned about potential injury to the neurovascular structures that pass deep to this bone, as it serves to protect them. The clavicle attaches the upper limb to the axial skeleton at which joint?",
+                options: {
+                    A: "Acromioclavicular joint",
+                    B: "Glenohumeral joint",
+                    C: "Sternoclavicular joint",
+                    D: "Scapulothoracic joint"
+                },
+                correctAnswer: "C",
+                rationale: "The clavicle, or 'collarbone,' is crucial for attaching the upper limb to the axial skeleton. This attachment occurs medially at the sternoclavicular joint. It also protects the underlying neurovascular structures.",
+                source: "'Attaches upper limb to axial skeleton at the sternoclavicular joint' (Pectoral Region and Axilla, Page 12)"
+            },
+            {
+                learningObjective: "LO 2 (Pectoral Region and Axilla): Identify and discuss the location and structure of the female breast, including its basic blood supply, innervation, and lymphatic drainage.",
+                question: "A 55-year-old woman undergoes a mastectomy for breast cancer. During the procedure, the surgeon carefully dissects the breast tissue off the underlying deep fascia. This creates a plane of separation that allows for some natural movement of the breast. What is the name of this layer of loose connective tissue?",
+                options: {
+                    A: "Suspensory ligament of Cooper",
+                    B: "Retromammary space",
+                    C: "Axillary tail of Spence",
+                    D: "Lactiferous sinus"
+                },
+                correctAnswer: "B",
+                rationale: "The retromammary space is a layer of loose connective tissue that separates the breast from the deep fascia overlying the pectoral muscles. This space allows for movement and is a key anatomical plane in breast surgery.",
+                source: "'Retromammary Space - Layer of connective tissue separating the breast from deep fascia overlying the muscles' (Pectoral Region and Axilla, Page 18)"
+            },
+            {
+                learningObjective: "LO 2 (Pectoral Region and Axilla): Identify and discuss the location and structure of the female breast, including its basic blood supply, innervation, and lymphatic drainage.",
+                question: "A 62-year-old woman is diagnosed with breast cancer in the upper outer quadrant of her left breast. A sentinel lymph node biopsy is performed to determine if the cancer has metastasized. The surgeon injects a blue dye near the tumor and identifies the first lymph nodes to receive lymphatic drainage. To which group of lymph nodes does the majority of breast lymph (>75%) drain?",
+                options: {
+                    A: "Parasternal lymph nodes",
+                    B: "Abdominal lymph nodes",
+                    C: "Axillary lymph nodes",
+                    D: "Supraclavicular lymph nodes"
+                },
+                correctAnswer: "C",
+                rationale: "The lymphatic drainage of the breast is clinically significant for cancer metastasis. More than 75% of the lymph, particularly from the lateral quadrants, drains to the axillary lymph nodes.",
+                source: "'Most of the breast (>75%) drains to the axillary lymph nodes' (Pectoral Region and Axilla, Page 23)"
+            },
+            {
+                learningObjective: "LO 2 (Pectoral Region and Axilla): Identify and discuss the location and structure of the female breast, including its basic blood supply, innervation, and lymphatic drainage.",
+                question: "During a breast examination on a 48-year-old woman, the physician notes that the nipple is located at the level of the T4 dermatome. Sensation to the skin of the breast, including the nipple, is provided by branches of specific nerves. Which nerves provide sensory innervation to the breast?",
+                options: {
+                    A: "Supraclavicular nerves",
+                    B: "Long thoracic nerve",
+                    C: "Medial and lateral pectoral nerves",
+                    D: "Anterior and lateral cutaneous branches of the 4th-6th intercostal nerves"
+                },
+                correctAnswer: "D",
+                rationale: "The breast receives sensory and sympathetic innervation from the anterior and lateral cutaneous branches of the 4th through 6th intercostal nerves. The nipple itself is specifically noted to be located at the T4 dermatome.",
+                source: "'Anterior and lateral cutaneous branches of 4th - 6th intercostal nerves provide: - Sensory innervation... Nipple is located at the T4 dermatome' (Pectoral Region and Axilla, Page 22)"
+            },
+            {
+                learningObjective: "LO 3 (Pectoral Region and Axilla): Identify the muscles of the pectoral region. Discuss their attachments, innervation, and actions. Describe the clinical implications of nerve damage and their loss of function.",
+                question: "A 25-year-old weightlifter presents with pain and weakness in his right shoulder. He reports difficulty performing bench presses. On examination, he has weakness with adduction and medial rotation of the arm. The physician suspects an injury to the largest muscle of the pectoral region. This muscle attaches distally to the lateral lip of the intertubercular groove of the humerus. Which muscle is most likely affected?",
+                options: {
+                    A: "Pectoralis minor",
+                    B: "Serratus anterior",
+                    C: "Pectoralis major",
+                    D: "Subclavius"
+                },
+                correctAnswer: "C",
+                rationale: "The pectoralis major is a large, fan-shaped muscle that forms the bulk of the anterior axillary fold. Its primary actions are adduction and medial rotation of the arm. Its distal attachment is the lateral lip of the intertubercular groove.",
+                source: "'Distal attachment - Lateral lip of intertubercular groove... Actions - Adduction, medial rotation, and flexion of the arm' (Pectoral Region and Axilla, Page 26)"
+            },
+            {
+                learningObjective: "LO 3 (Pectoral Region and Axilla): Identify the muscles of the pectoral region. Discuss their attachments, innervation, and actions. Describe the clinical implications of nerve damage and their loss of function.",
+                question: "A 45-year-old woman who underwent a right-sided mastectomy with axillary lymph node dissection 3 months ago presents for follow-up. She complains of weakness in her right shoulder and notes that her right scapula 'sticks out' when she pushes against a wall. This deformity is known as a 'winged scapula.' Damage to which nerve during her surgery would most likely cause this finding?",
+                options: {
+                    A: "Medial pectoral nerve",
+                    B: "Long thoracic nerve",
+                    C: "Thoracodorsal nerve",
+                    D: "Dorsal scapular nerve"
+                },
+                correctAnswer: "B",
+                rationale: "The long thoracic nerve (from roots C5, C6, C7) innervates the serratus anterior muscle. This muscle protracts the scapula and holds it against the thoracic wall. Paralysis of this muscle results in the medial border of the scapula protruding, a condition known as a winged scapula.",
+                source: "'Damage to the Long Thoracic Nerve - Weakens or paralyzes serratus anterior muscle and causes medial border of the scapula to protrude off the back. “Winged scapula”' (Pectoral Region and Axilla, Page 30)"
+            },
+            {
+                learningObjective: "LO 3 (Pectoral Region and Axilla): Identify the muscles of the pectoral region. Discuss their attachments, innervation, and actions. Describe the clinical implications of nerve damage and their loss of function.",
+                question: "During a cadaveric dissection, a medical student is tasked with identifying the pectoralis minor muscle. To do so, the student reflects the pectoralis major. They locate a smaller, triangular muscle that attaches superiorly to the coracoid process of the scapula and inferiorly to the 3rd-5th ribs. What is the primary action of this muscle?",
+                options: {
+                    A: "Adducts and medially rotates the arm",
+                    B: "Anchors and depresses the clavicle",
+                    C: "Protracts and rotates the scapula upwards",
+                    D: "Stabilizes the scapula by drawing it anteroinferiorly"
+                },
+                correctAnswer: "D",
+                rationale: "The pectoralis minor muscle lies deep to the pectoralis major. Its attachments allow it to stabilize the scapula by pulling it forward and downward against the thoracic wall.",
+                source: "'Actions - Stabilizes scapula by drawing it anteroinferiorly against thoracic wall' (Pectoral Region and Axilla, Page 27)"
+            },
+            {
+                learningObjective: "LO 4 (Pectoral Region and Axilla): Discuss the contents and boundaries of the axilla.",
+                question: "A 28-year-old man sustains a deep laceration to his armpit. In the emergency department, the surgeon explores the wound to assess for damage to the vital structures within this pyramidal space. The surgeon identifies the serratus anterior muscle. This muscle forms which boundary of the axilla?",
+                options: {
+                    A: "Anterior wall",
+                    B: "Posterior wall",
+                    C: "Medial wall",
+                    D: "Lateral wall"
+                },
+                correctAnswer: "C",
+                rationale: "The axilla is a pyramidal space between the arm and thorax. Its medial wall is formed by the serratus anterior muscle and the upper portion of the thoracic wall (ribs and intercostal muscles).",
+                source: "'Boundaries: ... Medially – serratus anterior muscle' (Pectoral Region and Axilla, Page 34)"
+            },
+            {
+                learningObjective: "LO 4 (Pectoral Region and Axilla): Discuss the contents and boundaries of the axilla.",
+                question: "A surgical resident is reviewing the anatomy of the axilla before assisting in an axillary lymph node dissection. She notes that the anterior wall of the axilla is composed of two primary muscles, one superficial and one deep. Which pair of muscles forms the anterior wall of the axilla?",
+                options: {
+                    A: "Serratus anterior and subscapularis",
+                    B: "Subscapularis and teres major",
+                    C: "Pectoralis major and pectoralis minor",
+                    D: "Deltoid and biceps brachii"
+                },
+                correctAnswer: "C",
+                rationale: "The anterior wall of the axilla is formed by the pectoralis major muscle, the pectoralis minor muscle, and the clavipectoral fascia associated with them.",
+                source: "'Boundaries: - Anterior – pectoralis minor and major muscles' (Pectoral Region and Axilla, Page 34)"
+            },
+            {
+                learningObjective: "LO 4 (Pectoral Region and Axilla): Discuss the contents and boundaries of the axilla.",
+                question: "A 35-year-old woman presents with a painful lump in her axilla. An MRI is ordered to evaluate the contents of the axillary space. In addition to the axillary artery, axillary vein, and lymph nodes, the MRI will show a complex network of nerves that surrounds the axillary artery. What is this network of nerves called?",
+                options: {
+                    A: "Cervical plexus",
+                    B: "Brachial plexus",
+                    C: "Intercostal nerves",
+                    D: "Lumbar plexus"
+                },
+                correctAnswer: "B",
+                rationale: "The primary contents of the axilla include the axillary artery and its branches, the axillary vein and its tributaries, axillary lymph nodes, and the cords and branches of the brachial plexus, all embedded in axillary fat.",
+                source: "'Contents: - Axillary artery - Axillary vein - Brachial plexus' (Pectoral Region and Axilla, Page 34)"
+            },
+            {
+                learningObjective: "LO 5 (Pectoral Region and Axilla): Identify the axillary artery and vein. Trace the course of the major branches arising from the axillary artery and describe their course/distribution.",
+                question: "A vascular surgeon is performing a bypass procedure in the upper arm. The surgeon needs to clamp the axillary artery. To properly identify its boundaries, the surgeon recalls that the axillary artery is a continuation of the subclavian artery. At what landmark does the name change from subclavian artery to axillary artery?",
+                options: {
+                    A: "Inferior border of the teres major muscle",
+                    B: "Lateral border of the first rib",
+                    C: "Medial border of the pectoralis minor muscle",
+                    D: "Coracoid process of the scapula"
+                },
+                correctAnswer: "B",
+                rationale: "The axillary artery begins at the lateral border of the 1st rib, where it is the direct continuation of the subclavian artery. It ends at the inferior border of the teres major muscle, where it becomes the brachial artery.",
+                source: "'Continuation of the subclavian a. - Name changes at the lateral border of the 1st rib' (Pectoral Region and Axilla, Page 36)"
+            },
+            {
+                learningObjective: "LO 5 (Pectoral Region and Axilla): Identify the axillary artery and vein. Trace the course of the major branches arising from the axillary artery and describe their course/distribution.",
+                question: "During an axillary dissection, a surgeon must be careful to preserve the branches of the axillary artery. The surgeon identifies the thoracoacromial trunk, which arises from the second part of the axillary artery, deep to the pectoralis minor. This trunk gives off four named branches. Which of the following is a branch of the thoracoacromial trunk?",
+                options: {
+                    A: "Superior thoracic artery",
+                    B: "Lateral thoracic artery",
+                    C: "Pectoral branch",
+                    D: "Subscapular artery"
+                },
+                correctAnswer: "C",
+                rationale: "The second part of the axillary artery lies deep to the pectoralis minor and gives off two branches: the thoracoacromial trunk and the lateral thoracic artery. The thoracoacromial trunk further divides into four branches: clavicular, acromial, deltoid, and pectoral.",
+                source: "'Branches: - Thoracoacromial trunk (artery)... > Pectoral branch' (Pectoral Region and Axilla, Page 38)"
+            },
+            {
+                learningObjective: "LO 5 (Pectoral Region and Axilla): Identify the axillary artery and vein. Trace the course of the major branches arising from the axillary artery and describe their course/distribution.",
+                question: "A 29-year-old man suffers a posterior dislocation of his shoulder. Following reduction, the physician is concerned about a possible injury to the artery that passes through the quadrangular space along with the axillary nerve. This artery is a branch of the third part of the axillary artery. Which artery is most at risk?",
+                options: {
+                    A: "Anterior humeral circumflex artery",
+                    B: "Posterior humeral circumflex artery",
+                    C: "Thoracodorsal artery",
+                    D: "Circumflex scapular artery"
+                },
+                correctAnswer: "B",
+                rationale: "The third part of the axillary artery gives rise to the subscapular artery, the anterior humeral circumflex artery, and the posterior humeral circumflex artery. The posterior humeral circumflex artery passes through the quadrangular space with the axillary nerve and is at risk of injury with posterior shoulder dislocations.",
+                source: "'Posterior humeral circumflex artery – passes medially through the posterior wall of the axilla via the quadrangular space with the axillary nerve' (Pectoral Region and Axilla, Page 82)"
+            },
+            {
+                learningObjective: "LO 6 (Pectoral Region and Axilla): Identify and discuss the venous drainage patterns of the axillary and cephalic veins.",
+                question: "A phlebotomist is attempting to draw blood from a patient's arm. He identifies a prominent superficial vein running in the groove between the deltoid and pectoralis major muscles. This vein ultimately pierces the deep fascia to empty into the axillary vein near the clavicle. Which vein is being described?",
+                options: {
+                    A: "Basilic vein",
+                    B: "Brachial vein",
+                    C: "Cephalic vein",
+                    D: "Axillary vein"
+                },
+                correctAnswer: "C",
+                rationale: "The cephalic vein is a superficial vein of the upper limb that runs in the deltopectoral groove between the deltoid and pectoralis major muscles. It empties into the axillary vein just inferior to the clavicle.",
+                source: "'Runs in the deltopectoral groove - Between the deltoid and pectoralis major muscles. Empties into the axillary vein near the clavicle' (Pectoral Region and Axilla, Page 43)"
+            },
+            {
+                learningObjective: "LO 6 (Pectoral Region and Axilla): Identify and discuss the venous drainage patterns of the axillary and cephalic veins.",
+                question: "During surgery in the axilla, the surgeon identifies the axillary vein. The surgeon notes that this large vein is formed by the union of two other veins at the inferior border of the teres major muscle. Which two veins unite to form the axillary vein?",
+                options: {
+                    A: "Cephalic and subclavian veins",
+                    B: "Brachial and basilic veins",
+                    C: "Internal and external jugular veins",
+                    D: "Cephalic and basilic veins"
+                },
+                correctAnswer: "B",
+                rationale: "The axillary vein is formed by the convergence of the brachial vein (a deep vein) and the basilic vein (a superficial vein) at the inferior border of the teres major. It then continues superiorly to become the subclavian vein.",
+                source: "'Formed by the union of brachial and basilic veins in the arm' (Pectoral Region and Axilla, Page 41)"
+            },
+            {
+                learningObjective: "LO 6 (Pectoral Region and Axilla): Identify and discuss the venous drainage patterns of the axillary and cephalic veins.",
+                question: "An anesthesiologist is placing a central venous catheter via the subclavian approach. He knows that medial to the first rib, the axillary vein becomes the subclavian vein. The axillary vein is typically located in what position relative to the axillary artery?",
+                options: {
+                    A: "Anterior",
+                    B: "Posterior",
+                    C: "Medial",
+                    D: "Lateral"
+                },
+                correctAnswer: "A",
+                rationale: "Within the axillary sheath, the axillary vein is located anterior to the axillary artery. This relationship is important for surgical and procedural orientation in the axilla.",
+                source: "'Located anterior to the axillary artery' (Pectoral Region and Axilla, Page 41)"
+            },
+            {
+                learningObjective: "LO 7 (Pectoral Region and Axilla): Describe the lymphatic drainage of the upper limb to axillary lymph nodes.",
+                question: "A 34-year-old woman presents with a tender, swollen lump in her right axilla. She has a history of a cat scratch on her right hand two weeks ago. The physician suspects lymphadenopathy resulting from an infection that has traveled through the lymphatic system. Lymphatic vessels from the upper limb primarily drain into which group of lymph nodes?",
+                options: {
+                    A: "Inguinal lymph nodes",
+                    B: "Cervical lymph nodes",
+                    C: "Axillary lymph nodes",
+                    D: "Parasternal lymph nodes"
+                },
+                correctAnswer: "C",
+                rationale: "The lymphatic drainage of the entire upper limb, including the hand, follows the superficial and deep lymphatic vessels, which ultimately drain into the axillary lymph nodes. These nodes filter the lymph before it returns to the venous circulation.",
+                source: "'Learning Objective: Describe the lymphatic drainage of the upper limb to axillary lymph nodes.' (Pectoral Region and Axilla, Page 2)"
+            },
+            {
+                learningObjective: "LO 7 (Pectoral Region and Axilla): Describe the lymphatic drainage of the upper limb to axillary lymph nodes.",
+                question: "A patient with an infection of the thumb and lateral aspect of the hand develops painful, enlarged lymph nodes in the axilla. Lymphatic drainage follows the venous system. Which superficial vein are the lymphatic vessels from the lateral hand most closely associated with?",
+                options: {
+                    A: "Basilic vein",
+                    B: "Cephalic vein",
+                    C: "Median cubital vein",
+                    D: "Brachial vein"
+                },
+                correctAnswer: "B",
+                rationale: "Lymphatic vessels from the lateral part of the hand and forearm ascend with the cephalic vein to drain into the axillary lymph nodes, specifically the apical group.",
+                source: "'Learning Objective: Identify and discuss the venous drainage patterns of the axillary and cephalic veins.' (Pectoral Region and Axilla, Page 2)"
+            },
+            {
+                learningObjective: "LO 7 (Pectoral Region and Axilla): Describe the lymphatic drainage of the upper limb to axillary lymph nodes.",
+                question: "After treatment for breast cancer, a patient develops lymphedema (swelling) of the upper limb. This is due to the disruption of lymphatic channels during the axillary lymph node dissection. The axillary nodes are the primary site for lymphatic drainage from both the breast and the upper limb. Where do the efferent vessels from the axillary nodes ultimately drain?",
+                options: {
+                    A: "Into the thoracic duct directly",
+                    B: "Into the subclavian lymphatic trunk",
+                    C: "Into the parasternal nodes",
+                    D: "Into the abdominal nodes"
+                },
+                correctAnswer: "B",
+                rationale: "After filtering through the various groups of axillary nodes (pectoral, subscapular, humeral, central, and apical), the lymph is collected into the subclavian lymphatic trunk, which then drains into the venous system at the junction of the internal jugular and subclavian veins.",
+                source: "'Lymph from the axillary lymph nodes are drained by the subclavian lymphatic trunk.' (Pectoral Region and Axilla, Page 78)"
+            },
+            {
+                learningObjective: "LO 8 (Pectoral Region and Axilla): Examine the organizational structure of the brachial plexus including the spinal cord levels from which the brachial plexus arises. Identify the components of the brachial plexus. Demonstrate the areas of distribution of these motor and sensory nerves. Begin to predict neuromuscular deficits that would result from brachial plexus injuries (such as Erb’s palsy and Klumpke’s palsy) or peripheral nerves that arise from the brachial plexus.",
+                question: "A male newborn is delivered via a difficult vaginal birth complicated by shoulder dystocia. On examination, his right arm is adducted, internally rotated, and the forearm is pronated, a posture known as 'waiter's tip.' This presentation is characteristic of an upper brachial plexus injury (Erb's palsy). Injury to which spinal nerve roots is the cause of this condition?",
+                options: {
+                    A: "C5 and C6",
+                    B: "C6 and C7",
+                    C: "C7 and C8",
+                    D: "C8 and T1"
+                },
+                correctAnswer: "A",
+                rationale: "Erb's palsy is an injury to the superior parts of the brachial plexus, specifically the C5 and C6 nerve roots. This results from an excessive increase in the angle between the neck and shoulder, damaging the nerves that supply the shoulder abductors/lateral rotators and forearm supinators/flexors.",
+                source: "'Erb\\'s Palsy... Injury to the superior parts of brachial plexus (C5 and C6 roots)' (Pectoral Region and Axilla, Page 61)"
+            },
+            {
+                learningObjective: "LO 8 (Pectoral Region and Axilla): Examine the organizational structure of the brachial plexus including the spinal cord levels from which the brachial plexus arises. Identify the components of the brachial plexus. Demonstrate the areas of distribution of these motor and sensory nerves. Begin to predict neuromuscular deficits that would result from brachial plexus injuries (such as Erb’s palsy and Klumpke’s palsy) or peripheral nerves that arise from the brachial plexus.",
+                question: "A 28-year-old man falls from a tree and grabs a branch to break his fall, causing a sudden upward pull on his arm. He now presents with weakness and sensory loss in his hand. Examination reveals paralysis and atrophy of the intrinsic hand muscles and sensory loss along the medial aspect of his forearm and hand. This clinical picture is consistent with a lower brachial plexus injury (Klumpke's palsy). Which nerve roots are most likely affected?",
+                options: {
+                    A: "C5 and C6",
+                    B: "C6 and C7",
+                    C: "C7 and C8",
+                    D: "C8 and T1"
+                },
+                correctAnswer: "D",
+                rationale: "Klumpke's palsy is an injury to the inferior roots of the brachial plexus (C8 and T1). This type of injury typically occurs when the arm is suddenly pulled superiorly, leading to paralysis of the small muscles of the hand (claw hand) and sensory loss on the medial side of the upper limb.",
+                source: "'Klumpke\\'s palsy - Injury to inferior parts of brachial plexus (C8 and T1 roots)' (Pectoral Region and Axilla, Page 62)"
+            },
+            {
+                learningObjective: "LO 8 (Pectoral Region and Axilla): Examine the organizational structure of the brachial plexus including the spinal cord levels from which the brachial plexus arises. Identify the components of the brachial plexus. Demonstrate the areas of distribution of these motor and sensory nerves. Begin to predict neuromuscular deficits that would result from brachial plexus injuries (such as Erb’s palsy and Klumpke’s palsy) or peripheral nerves that arise from the brachial plexus.",
+                question: "A medical student is dissecting the axilla and identifies the three cords of the brachial plexus surrounding the axillary artery. The student isolates the cord formed by the union of the anterior divisions of the superior and middle trunks. Which cord of the brachial plexus is this?",
+                options: {
+                    A: "Medial cord",
+                    B: "Lateral cord",
+                    C: "Posterior cord",
+                    D: "Anterior cord"
+                },
+                correctAnswer: "B",
+                rationale: "The brachial plexus is organized into roots, trunks, divisions, and cords. The lateral cord is located lateral to the axillary artery and is formed from the anterior divisions of the superior (C5, C6) and middle (C7) trunks.",
+                source: "'Lateral cord - From anterior division of superior and middle trunks' (Pectoral Region and Axilla, Page 54)"
+            },
+            {
+                learningObjective: "LO 9 (Pectoral Region and Axilla): Identify anatomical structures associated with the pectoral region and axilla on X-Rays, MRI, and CT scans.",
+                question: "A 68-year-old woman with a history of osteoporosis falls onto her outstretched hand. She presents with severe shoulder pain. An anteroposterior radiograph of the shoulder is obtained. The radiologist notes a fracture at the most constricted part of the proximal humerus, distal to the head and tubercles, where the bone narrows to become the shaft. Which anatomical structure is fractured?",
+                options: {
+                    A: "Anatomical neck of the humerus",
+                    B: "Greater tubercle",
+                    C: "Surgical neck of the humerus",
+                    D: "Humeral shaft"
+                },
+                correctAnswer: "C",
+                rationale: "The surgical neck of the humerus is a common site for fractures, especially in the elderly. It is located just distal to the greater and lesser tubercles. The annotated radiograph identifies this specific location.",
+                source: "'Radiology Review image key: 4. Surgical neck of humerus' (Anterior Arm & Cubital Fossa, Page 46)"
+            },
+            {
+                learningObjective: "LO 9 (Pectoral Region and Axilla): Identify anatomical structures associated with the pectoral region and axilla on X-Rays, MRI, and CT scans.",
+                question: "A radiologist is reviewing a shoulder X-ray and identifying key bony landmarks of the scapula. They locate a hook-like process on the anterolateral aspect of the scapula that serves as an attachment site for the pectoralis minor and coracobrachialis muscles. Which structure is being identified?",
+                options: {
+                    A: "Acromion",
+                    B: "Glenoid fossa",
+                    C: "Spine of the scapula",
+                    D: "Coracoid process"
+                },
+                correctAnswer: "D",
+                rationale: "The coracoid process is a hook-like projection from the scapula that is an important attachment site for several muscles and ligaments. It is clearly labeled on the provided annotated shoulder X-ray.",
+                source: "'Radiology Review image key: 10. Coracoid process' (Anterior Arm & Cubital Fossa, Page 46)"
+            },
+            {
+                learningObjective: "LO 9 (Pectoral Region and Axilla): Identify anatomical structures associated with the pectoral region and axilla on X-Rays, MRI, and CT scans.",
+                question: "On a shoulder radiograph, the articulation between the head of the humerus and the scapula is visualized. The shallow cavity on the lateral border of the scapula that forms this joint is a key component of the shoulder's mobility. What is the name of this scapular structure?",
+                options: {
+                    A: "Acromion",
+                    B: "Glenoid fossa",
+                    C: "Infraspinous fossa",
+                    D: "Coracoid process"
+                },
+                correctAnswer: "B",
+                rationale: "The glenoid fossa (or glenoid cavity) is the shallow articular surface on the lateral angle of the scapula that articulates with the head of the humerus to form the glenohumeral joint.",
+                source: "'Radiology Review image key: 7. Glenoid fossa' (Anterior Arm & Cubital Fossa, Page 46)"
+            },
+            // Anterior Arm & Cubital Fossa Questions
+            {
+                learningObjective: "LO 1 (Anterior Arm & Cubital Fossa): Identify the bony features, articulations, and associated ligaments of the humerus and proximal radius and ulna. Discuss the anatomical & clinical considerations of fractures of these bones and radial head subluxation.",
+                question: "A 75-year-old woman falls on her outstretched hand and presents with severe pain and deformity of her right shoulder. An X-ray reveals a fracture of the surgical neck of the humerus. This type of fracture puts a specific nerve at risk due to its close proximity as it wraps around this part of the bone. Which nerve is most likely to be injured?",
+                options: {
+                    A: "Median nerve",
+                    B: "Radial nerve",
+                    C: "Axillary nerve",
+                    D: "Musculocutaneous nerve"
+                },
+                correctAnswer: "C",
+                rationale: "Fractures of the surgical neck of the humerus are common in the elderly. The axillary nerve passes posteriorly to the surgical neck, making it particularly vulnerable to injury with this type of fracture.",
+                source: "'Fractures of the Surgical Neck of the Humerus... Can impact the axillary nerve' (Anterior Arm & Cubital Fossa, Page 7)"
+            },
+            {
+                learningObjective: "LO 1 (Anterior Arm & Cubital Fossa): Identify the bony features, articulations, and associated ligaments of the humerus and proximal radius and ulna. Discuss the anatomical & clinical considerations of fractures of these bones and radial head subluxation.",
+                question: "A 3-year-old boy is brought to the pediatrician by his mother, who states that she pulled him up by his arm to prevent him from falling. Since then, the child has refused to use his left arm and holds it in slight flexion and pronation. The physician suspects a radial head subluxation ('nursemaid's elbow'). This injury involves the displacement of which ligament?",
+                options: {
+                    A: "Ulnar collateral ligament",
+                    B: "Radial collateral ligament",
+                    C: "Anular ligament",
+                    D: "Interosseous membrane"
+                },
+                correctAnswer: "C",
+                rationale: "Radial head subluxation occurs when the radial head slips out from under the anular ligament, which normally encircles the radial head and holds it against the ulna. This is a common injury in young children when their arm is pulled suddenly.",
+                source: "'Learning Objective: Discuss the anatomical & clinical considerations of fractures of these bones and radial head subluxation.' (Anterior Arm & Cubital Fossa, Page 3)"
+            },
+            {
+                learningObjective: "LO 1 (Anterior Arm & Cubital Fossa): Identify the bony features, articulations, and associated ligaments of the humerus and proximal radius and ulna. Discuss the anatomical & clinical considerations of fractures of these bones and radial head subluxation.",
+                question: "A patient presents with a mid-shaft fracture of the humerus. On examination, the patient is unable to extend their wrist ('wrist drop'). This deficit suggests an injury to the nerve that runs in the radial groove on the posterior surface of the humeral shaft. Which nerve is most likely compromised?",
+                options: {
+                    A: "Ulnar nerve",
+                    B: "Median nerve",
+                    C: "Axillary nerve",
+                    D: "Radial nerve"
+                },
+                correctAnswer: "D",
+                rationale: "The radial groove is a feature on the posterior aspect of the shaft of the humerus. The radial nerve travels within this groove and is therefore at high risk for injury with mid-shaft humeral fractures, leading to clinical signs like wrist drop.",
+                source: "'Shaft of the humerus... Radial groove: posteriorly' (Anterior Arm & Cubital Fossa, Page 6)"
+            },
+            {
+                learningObjective: "LO 2 (Anterior Arm & Cubital Fossa): Discuss the organization of the fascial compartments of the arm in terms of functional muscular groups and neurovasculature supplying each compartment.",
+                question: "A 25-year-old man sustains a crush injury to his upper arm. He develops severe pain, swelling, and paresthesia. The physician is concerned about compartment syndrome. The muscles of the anterior compartment of the arm, which are primarily responsible for flexion, are innervated by a single nerve. Which nerve supplies the muscles in this compartment?",
+                options: {
+                    A: "Radial nerve",
+                    B: "Median nerve",
+                    C: "Ulnar nerve",
+                    D: "Musculocutaneous nerve"
+                },
+                correctAnswer: "D",
+                rationale: "The arm is divided into an anterior (flexor) and a posterior (extensor) compartment by intermuscular septa. The general innervation for the muscles in the anterior compartment is the musculocutaneous nerve.",
+                source: "'Anterior Compartment of the Arm - General innervation: musculocutaneous n.' (Anterior Arm & Cubital Fossa, Page 12)"
+            },
+            {
+                learningObjective: "LO 2 (Anterior Arm & Cubital Fossa): Discuss the organization of the fascial compartments of the arm in terms of functional muscular groups and neurovasculature supplying each compartment.",
+                question: "During a dissection of the upper arm, a medical student observes that the deep fascia (brachial fascia) sends septa inward to attach to the humerus, thereby dividing the arm into two compartments. What are these dividing structures called?",
+                options: {
+                    A: "Interosseous membranes",
+                    B: "Medial and lateral intermuscular septa",
+                    C: "Bicipital aponeuroses",
+                    D: "Antebrachial fascia"
+                },
+                correctAnswer: "B",
+                rationale: "The brachial fascia encases the arm and gives rise to the medial and lateral intermuscular septa, which attach to the humerus and separate the anterior (flexor) compartment from the posterior (extensor) compartment.",
+                source: "'Diagram shows Medial Intermuscular Fascia and Lateral Intermuscular Fascia separating the anterior and posterior compartments.' (Anterior Arm & Cubital Fossa, Page 9)"
+            },
+            {
+                learningObjective: "LO 2 (Anterior Arm & Cubital Fossa): Discuss the organization of the fascial compartments of the arm in terms of functional muscular groups and neurovasculature supplying each compartment.",
+                question: "A patient has a lesion of the musculocutaneous nerve high in the axilla. While there will be significant weakness in forearm flexion, one muscle in the anterior compartment may retain some function due to its unique innervation. Which muscle of the anterior compartment has dual innervation?",
+                options: {
+                    A: "Biceps brachii",
+                    B: "Coracobrachialis",
+                    C: "Brachialis",
+                    D: "Triceps brachii"
+                },
+                correctAnswer: "C",
+                rationale: "The brachialis muscle is the primary flexor of the forearm. It is unique in that it has dual innervation: the musculocutaneous nerve supplies its medial part, and the radial nerve supplies its lateral part.",
+                source: "'Brachialis Muscle... Dual innervation: musculocutaneous n. (C5, 6, 7) and radial n. (C5, 7)' (Anterior Arm & Cubital Fossa, Page 20)"
+            },
+            {
+                learningObjective: "LO 3 (Anterior Arm & Cubital Fossa): Describe the attachments, innervation, functions, and testing procedures of muscles found in the anterior arm. Predict functional consequences of loss of action of these muscles.",
+                question: "A 45-year-old carpenter presents with weakness in his right arm. He finds it particularly difficult to turn a screwdriver and to bring a cup to his mouth. On examination, there is marked weakness in forearm supination and flexion. These actions are primarily performed by a muscle that attaches distally to the tuberosity of the radius. Which muscle is most likely weak?",
+                options: {
+                    A: "Brachialis",
+                    B: "Coracobrachialis",
+                    C: "Biceps brachii",
+                    D: "Triceps brachii"
+                },
+                correctAnswer: "C",
+                rationale: "The biceps brachii muscle is a powerful supinator and flexor of the forearm. Its distal tendon attaches to the radial tuberosity, making it mechanically efficient for these actions.",
+                source: "'Distal attachment: tuberosity of the radius... Actions: supinates and flexes the forearm' (Anterior Arm & Cubital Fossa, Page 13)"
+            },
+            {
+                learningObjective: "LO 3 (Anterior Arm & Cubital Fossa): Describe the attachments, innervation, functions, and testing procedures of muscles found in the anterior arm. Predict functional consequences of loss of action of these muscles.",
+                question: "A patient with a penetrating injury to the upper arm has lost function of the coracobrachialis muscle. This muscle attaches proximally to the coracoid process and distally to the medial surface of the humerus. Which action would be weakened as a result of this injury?",
+                options: {
+                    A: "Supination of the forearm",
+                    B: "Extension of the forearm",
+                    C: "Flexion and adduction of the arm",
+                    D: "Abduction of the arm"
+                },
+                correctAnswer: "C",
+                rationale: "The coracobrachialis muscle, innervated by the musculocutaneous nerve, acts to flex and adduct the arm at the glenohumeral joint. It also helps stabilize the joint.",
+                source: "'Actions: flex and adduct the arm, stabilize the glenohumeral joint' (Anterior Arm & Cubital Fossa, Page 22)"
+            },
+            {
+                learningObjective: "LO 3 (Anterior Arm & Cubital Fossa): Describe the attachments, innervation, functions, and testing procedures of muscles found in the anterior arm. Predict functional consequences of loss of action of these muscles.",
+                question: "During a neurological exam, a physician tests the integrity of the C5 and C6 spinal nerve levels by tapping the biceps tendon and observing for a reflexive contraction. This test specifically evaluates the function of a nerve that innervates the primary forearm flexors. What reflex is being tested?",
+                options: {
+                    A: "Triceps myotatic reflex",
+                    B: "Brachioradialis reflex",
+                    C: "Biceps myotatic reflex",
+                    D: "Patellar reflex"
+                },
+                correctAnswer: "C",
+                rationale: "The biceps myotatic reflex (biceps jerk) is used to test the integrity of the musculocutaneous nerve and the C5 and C6 spinal cord segments. It involves tapping the biceps tendon to elicit a reflexive contraction of the biceps brachii muscle.",
+                source: "'Biceps Myotatic Reflex - Test the integrity of the musculocutaneous n. (C5&6)' (Anterior Arm & Cubital Fossa, Page 17)"
+            },
+            {
+                learningObjective: "LO 4 (Anterior Arm & Cubital Fossa): Describe the boundaries, contents, and relationships of structures found in the cubital fossa.",
+                question: "A nurse is preparing to draw venous blood from a patient's arm. The most common site for venipuncture is the median cubital vein, which lies superficially within the cubital fossa. The cubital fossa is a triangular space with a superior boundary formed by an imaginary line between two bony landmarks. What are these two landmarks?",
+                options: {
+                    A: "Olecranon and radial head",
+                    B: "Coracoid process and acromion",
+                    C: "Medial and lateral epicondyles of the humerus",
+                    D: "Radial and ulnar styloid processes"
+                },
+                correctAnswer: "C",
+                rationale: "The cubital fossa is bounded superiorly by an imaginary line connecting the medial and lateral epicondyles of the humerus. Its medial boundary is the pronator teres muscle, and its lateral boundary is the brachioradialis muscle.",
+                source: "'Superior: imaginary line connecting the medial and later epicondyles' (Anterior Arm & Cubital Fossa, Page 41)"
+            },
+            {
+                learningObjective: "LO 4 (Anterior Arm & Cubital Fossa): Describe the boundaries, contents, and relationships of structures found in the cubital fossa.",
+                question: "A patient presents to the emergency department after a supracondylar fracture of the humerus. There is concern for injury to the contents of the cubital fossa. From lateral to medial, the contents are arranged in a specific order. Which of the following correctly lists the contents of the cubital fossa from lateral to medial?",
+                options: {
+                    A: "Median Nerve, Brachial Artery, Biceps Tendon, Radial Nerve",
+                    B: "Biceps Tendon, Brachial Artery, Median Nerve, Radial Nerve",
+                    C: "Radial Nerve, Biceps Tendon, Brachial Artery, Median Nerve",
+                    D: "Brachial Artery, Median Nerve, Biceps Tendon, Radial Nerve"
+                },
+                correctAnswer: "C",
+                rationale: "The contents of the cubital fossa, from lateral to medial, can be remembered by the mnemonic 'Really Need Beer To Be At My Nicest': Radial Nerve, Biceps Tendon, Brachial Artery, Median Nerve. Note that the ulnar nerve is not a content of the fossa.",
+                source: "'Contents of the Cubital Fossa: Radial nerve. Tendon - Artery - Nerve (Lateral -> Medial)' (Anterior Arm & Cubital Fossa, Page 43)"
+            },
+            {
+                learningObjective: "LO 4 (Anterior Arm & Cubital Fossa): Describe the boundaries, contents, and relationships of structures found in the cubital fossa.",
+                question: "A surgeon is operating in the cubital fossa and must identify the medial boundary to avoid damaging nearby structures. Which muscle forms the medial boundary of the cubital fossa?",
+                options: {
+                    A: "Brachioradialis",
+                    B: "Pronator teres",
+                    C: "Brachialis",
+                    D: "Biceps brachii"
+                },
+                correctAnswer: "B",
+                rationale: "The cubital fossa is bounded medially by the pronator teres muscle and laterally by the brachioradialis muscle.",
+                source: "'Medial: pronator teres m.' (Anterior Arm & Cubital Fossa, Page 41)"
+            },
+            {
+                learningObjective: "LO 5 (Anterior Arm & Cubital Fossa): Describe the course and innervations (i.e., muscular and cutaneous innervation) of the musculocutaneous, median, and ulnar nerves within the arm. Describe common sites of injury and clinical manifestations of the subsequent neurodeficiencies. Describe the bicipital myotatic reflex.",
+                question: "An 18-year-old male sustains a stab wound to his upper arm. During the physical exam, he is found to have weakness in flexing his forearm and a loss of sensation on the lateral aspect of his forearm. This combination of motor and sensory deficits points to an injury of a single nerve. Which nerve is most likely injured?",
+                options: {
+                    A: "Median nerve",
+                    B: "Ulnar nerve",
+                    C: "Radial nerve",
+                    D: "Musculocutaneous nerve"
+                },
+                correctAnswer: "D",
+                rationale: "The musculocutaneous nerve innervates the muscles of the anterior compartment of the arm (flexors) and continues as the lateral cutaneous nerve of the forearm, providing sensation to the lateral forearm.",
+                source: "'Innervates: coracobrachialis, biceps brachii, & brachialis... Becomes the lateral cutaneous nerve of the forearm → sensation from the lateral aspect of the forearm' (Anterior Arm & Cubital Fossa, Page 26)"
+            },
+            {
+                learningObjective: "LO 5 (Anterior Arm & Cubital Fossa): Describe the course and innervations (i.e., muscular and cutaneous innervation) of the musculocutaneous, median, and ulnar nerves within the arm. Describe common sites of injury and clinical manifestations of the subsequent neurodeficiencies. Describe the bicipital myotatic reflex.",
+                question: "A patient complains of numbness and tingling in their fourth and fifth digits after resting their elbow on a table for a prolonged period. This suggests compression of a nerve that passes posterior to the medial epicondyle of the humerus. Which nerve is being compressed?",
+                options: {
+                    A: "Ulnar nerve",
+                    B: "Median nerve",
+                    C: "Radial nerve",
+                    D: "Musculocutaneous nerve"
+                },
+                correctAnswer: "A",
+                rationale: "The ulnar nerve passes from the anterior compartment of the arm into the posterior compartment and then travels posterior to the medial epicondyle at the elbow (in the 'funny bone' area), making it susceptible to compression or injury at this site.",
+                source: "'Ulnar n. ... posterior aspect of the medial epicondyle' (Anterior Arm & Cubital Fossa, Page 29)"
+            },
+            {
+                learningObjective: "LO 5 (Anterior Arm & Cubital Fossa): Describe the course and innervations (i.e., muscular and cutaneous innervation) of the musculocutaneous, median, and ulnar nerves within the arm. Describe common sites of injury and clinical manifestations of the subsequent neurodeficiencies. Describe the bicipital myotatic reflex.",
+                question: "In the arm, the median nerve travels alongside a major artery before passing through the cubital fossa. This close relationship is clinically important, as injuries to one structure often involve the other. Which artery travels with the median nerve in the arm?",
+                options: {
+                    A: "Profunda brachii artery",
+                    B: "Brachial artery",
+                    C: "Ulnar artery",
+                    D: "Radial artery"
+                },
+                correctAnswer: "B",
+                rationale: "The median nerve travels down the arm in close association with the brachial artery. They run together through the cubital fossa, where the brachial artery is medial to the biceps tendon and the median nerve is medial to the brachial artery.",
+                source: "'Brachial artery travels with the median n.' (Anterior Arm & Cubital Fossa, Page 36)"
+            },
+            {
+                learningObjective: "LO 6 (Anterior Arm & Cubital Fossa): Trace the courses of the major arteries, superficial & deep veins, and lymphatics within the arm. Define collateral circulation, and describe why it is important at joints in general and specifically at the elbow. Identify sites where a pulse rate can be measured.",
+                question: "A patient has a severe laceration to the arm that requires ligation of the brachial artery just distal to the origin of the profunda brachii artery. Blood flow to the forearm is maintained, albeit reduced, due to a network of interconnecting arteries around the elbow joint. What is this network of alternative pathways for blood flow called?",
+                options: {
+                    A: "Anastomosis",
+                    B: "Arteriovenous shunt",
+                    C: "Portal system",
+                    D: "End artery system"
+                },
+                correctAnswer: "A",
+                rationale: "An anastomosis is a connection between adjacent blood vessels. The arterial anastomoses around the elbow (collateral circulation) provide alternative routes for blood to reach the forearm and hand if the brachial artery is occluded, allowing blood flow regardless of joint position.",
+                source: "'Arterial anastomoses around the elbow: allows blood flow regardless of the position of the joint.' (Anterior Arm & Cubital Fossa, Page 34)"
+            },
+            {
+                learningObjective: "LO 6 (Anterior Arm & Cubital Fossa): Trace the courses of the major arteries, superficial & deep veins, and lymphatics within the arm. Define collateral circulation, and describe why it is important at joints in general and specifically at the elbow. Identify sites where a pulse rate can be measured.",
+                question: "An EMT is assessing an unconscious patient and needs to check for a pulse in the upper limb. A common and easily accessible site is on the medial side of the arm, midway between the shoulder and elbow, where the brachial artery is relatively superficial. Where is the brachial artery pulse best palpated?",
+                options: {
+                    A: "In the deltopectoral groove",
+                    B: "Posterior to the lateral epicondyle",
+                    C: "Medial to the biceps brachii muscle",
+                    D: "In the anatomical snuffbox"
+                },
+                correctAnswer: "C",
+                rationale: "The brachial artery pulse can be palpated on the medial aspect of the mid-arm, in the groove between the biceps brachii and triceps brachii muscles. It is also used for measuring blood pressure.",
+                source: "'Diagram labeled \"Brachial Artery Pulse\" shows the pulse point on the medial side of the arm, medial to the biceps.' (Anterior Arm & Cubital Fossa, Page 33)"
+            },
+            {
+                learningObjective: "LO 6 (Anterior Arm & Cubital Fossa): Trace the courses of the major arteries, superficial & deep veins, and lymphatics within the arm. Define collateral circulation, and describe why it is important at joints in general and specifically at the elbow. Identify sites where a pulse rate can be measured.",
+                question: "The basilic vein is a large superficial vein of the upper limb. It travels up the medial aspect of the forearm and arm. In the mid-arm, it pierces the brachial fascia to run deep. The basilic vein then joins with the brachial veins to form which larger vein?",
+                options: {
+                    A: "Cephalic vein",
+                    B: "Subclavian vein",
+                    C: "Axillary vein",
+                    D: "Jugular vein"
+                },
+                correctAnswer: "C",
+                rationale: "The basilic vein travels up the medial arm, pierces the deep fascia, and joins with the brachial veins to form the axillary vein. The axillary vein is the continuation of this vessel into the axilla.",
+                source: "'Axillary vein: continuation of the basilic vein into the axilla' (Anterior Arm & Cubital Fossa, Page 37)"
+            },
+            {
+                learningObjective: "LO 7 (Anterior Arm & Cubital Fossa): Discuss the clinical presentation and anatomical basis for the following: biceps tendinopathy and rupture of the long head of the biceps tendon.",
+                question: "A 50-year-old man reports feeling a sudden 'snap' in his shoulder while lifting a heavy box, followed by the appearance of a bulge in the middle of his upper arm. On examination, a prominent, ball-like muscle belly is visible, which becomes more pronounced when he flexes his elbow. This 'Popeye deformity' is a classic sign of what injury?",
+                options: {
+                    A: "Rupture of the short head of the biceps tendon",
+                    B: "Rupture of the long head of the biceps tendon",
+                    C: "Biceps tendinitis",
+                    D: "Fracture of the humerus"
+                },
+                correctAnswer: "B",
+                rationale: "A rupture of the long head of the biceps tendon typically occurs from excessive wear and tear of an inflamed tendon. It is often associated with a snap or pop, followed by the formation of a bulge in the arm as the unrestrained muscle belly contracts, known as the 'Popeye deformity.'",
+                source: "'Rupture of the Long Head of the Biceps... AKA \"Popeye deformity\"' (Anterior Arm & Cubital Fossa, Page 19)"
+            },
+            {
+                learningObjective: "LO 7 (Anterior Arm & Cubital Fossa): Discuss the clinical presentation and anatomical basis for the following: biceps tendinopathy and rupture of the long head of the biceps tendon.",
+                question: "A 35-year-old swimmer presents with chronic anterior shoulder pain that is worse with overhead movements. The pain is localized over the bicipital groove of the humerus. The physician suspects biceps tendinitis. This condition is an inflammation of the tendon of which part of the biceps brachii muscle?",
+                options: {
+                    A: "Short head",
+                    B: "Long head",
+                    C: "Distal tendon",
+                    D: "Bicipital aponeurosis"
+                },
+                correctAnswer: "B",
+                rationale: "Biceps tendinitis specifically refers to the inflammation of the long head of the biceps brachii tendon as it passes through the intertubercular sulcus (bicipital groove) of the humerus.",
+                source: "'Biceps Tendinitis - Inflammation of long head of the biceps brachii tendon' (Anterior Arm & Cubital Fossa, Page 18)"
+            },
+            {
+                learningObjective: "LO 7 (Anterior Arm & Cubital Fossa): Discuss the clinical presentation and anatomical basis for the following: biceps tendinopathy and rupture of the long head of the biceps tendon.",
+                question: "The long head of the biceps tendon originates from a small prominence on the scapula located just above the glenoid fossa. Chronic inflammation and eventual rupture of this tendon occur at this attachment site. What is the name of this proximal attachment point?",
+                options: {
+                    A: "Coracoid process",
+                    B: "Infraglenoid tubercle",
+                    C: "Supraglenoid tubercle",
+                    D: "Acromion"
+                },
+                correctAnswer: "C",
+                rationale: "The long head of the biceps brachii muscle has its proximal attachment on the supraglenoid tubercle of the scapula. The tendon then passes through the shoulder joint capsule and the bicipital groove.",
+                source: "'Proximal attachment: ... Long head: supraglenoid tubercle' (Anterior Arm & Cubital Fossa, Page 13)"
+            },
+            {
+                learningObjective: "LO 8 (Anterior Arm & Cubital Fossa): Identify anatomical structures associated with the anterior arm and cubital fossa on X-Rays, MRI, and CT scans.",
+                question: "A radiologist is examining an AP X-ray of an elbow. They identify the rounded articular surface on the lateral aspect of the distal humerus which articulates with the head of the radius. What is this structure called?",
+                options: {
+                    A: "Trochlea",
+                    B: "Capitulum",
+                    C: "Medial epicondyle",
+                    D: "Olecranon fossa"
+                },
+                correctAnswer: "B",
+                rationale: "The capitulum is the smooth, rounded eminence on the lateral portion of the distal articular surface of the humerus. It articulates with the head of the radius.",
+                source: "'Radiology Review image key: 3. Capitulum' (Anterior Arm & Cubital Fossa, Page 47)"
+            },
+            {
+                learningObjective: "LO 8 (Anterior Arm & Cubital Fossa): Identify anatomical structures associated with the anterior arm and cubital fossa on X-Rays, MRI, and CT scans.",
+                question: "On a lateral X-ray of a flexed elbow, a large depression on the posterior surface of the humerus is visible. This fossa accommodates the proximal end of the ulna during forearm extension. What is this landmark called?",
+                options: {
+                    A: "Coronoid fossa",
+                    B: "Radial fossa",
+                    C: "Olecranon fossa",
+                    D: "Trochlear notch"
+                },
+                correctAnswer: "C",
+                rationale: "The olecranon fossa is a deep triangular depression on the posterior side of the distal humerus that receives the olecranon process of the ulna when the elbow is extended.",
+                source: "'Radiology Review image key: 15. Olecranon fossa' (Anterior Arm & Cubital Fossa, Page 47)"
+            },
+            {
+                learningObjective: "LO 8 (Anterior Arm & Cubital Fossa): Identify anatomical structures associated with the anterior arm and cubital fossa on X-Rays, MRI, and CT scans.",
+                question: "An orthopedic surgeon is reviewing an elbow radiograph to assess the alignment of the proximal ulna. They identify the large, C-shaped articular surface of the ulna that articulates with the trochlea of the humerus. What is this structure called?",
+                options: {
+                    A: "Olecranon",
+                    B: "Coronoid process",
+                    C: "Trochlear notch",
+                    D: "Radial notch"
+                },
+                correctAnswer: "C",
+                rationale: "The trochlear notch is a large depression in the proximal ulna that articulates with the trochlea of the humerus to form the main hinge of the elbow joint.",
+                source: "'Radiology Review image key: 16. Trochlear notch' (Anterior Arm & Cubital Fossa, Page 47)"
+            },
+            // Papulosquamous and Eczema Questions
+            {
+                learningObjective: "LO 1 (Papulosquamous Diseases and The Spectrum of Eczema): Differentiate the various papulosquamous skin conditions, including psoriasis vulgaris, guttate psoriasis, pityriasis rosea, lichen planus, and seborrheic dermatitis. Discuss the pathophysiology and clinical presentation of these conditions.",
+                question: "A 35-year-old man presents with an itchy rash on his wrists and ankles. On examination, there are violaceous, polygonal, flat-topped papules. A close look at the surface of the papules reveals fine, white, reticulated lines. The patient also has lacy white plaques on his buccal mucosa. Which of the following is the most likely diagnosis?",
+                options: {
+                    A: "Psoriasis vulgaris",
+                    B: "Pityriasis rosea",
+                    C: "Lichen planus",
+                    D: "Seborrheic dermatitis"
+                },
+                correctAnswer: "C",
+                rationale: "Lichen planus is characterized by the '5 Ps': pruritic, purple, polygonal, planar papules. The presence of Wickham's striae (the fine white lines) on the skin and oral mucosa is pathognomonic for this condition.",
+                source: "'Purple, polygonal, planar, pruritic papules. Wickam\\'s striae' (Red, Scaly Rashes, Page 29)"
+            },
+            {
+                learningObjective: "LO 1 (Papulosquamous Diseases and The Spectrum of Eczema): Differentiate the various papulosquamous skin conditions, including psoriasis vulgaris, guttate psoriasis, pityriasis rosea, lichen planus, and seborrheic dermatitis. Discuss the pathophysiology and clinical presentation of these conditions.",
+                question: "A 22-year-old woman presents with a widespread rash that appeared over the last two weeks. It began with a single, 3-cm oval, pink patch on her trunk. Now, she has numerous smaller, similar patches on her trunk and proximal extremities. The long axis of these oval lesions appears to be oriented in lines that resemble the distribution of a fir tree. Which of the following is the most likely diagnosis?",
+                options: {
+                    A: "Guttate psoriasis",
+                    B: "Pityriasis rosea",
+                    C: "Nummular eczema",
+                    D: "Tinea corporis"
+                },
+                correctAnswer: "B",
+                rationale: "The classic presentation of pityriasis rosea includes a 'herald patch' (the initial single lesion) followed by a generalized eruption of smaller oval papules and plaques with a 'Christmas tree' or 'fir tree' distribution on the back, following skin lines.",
+                source: "'Herald Patch. Multiple smaller lesions... Follow skin lines: fir tree' (Red, Scaly Rashes, Page 26)"
+            },
+            {
+                learningObjective: "LO 1 (Papulosquamous Diseases and The Spectrum of Eczema): Differentiate the various papulosquamous skin conditions, including psoriasis vulgaris, guttate psoriasis, pityriasis rosea, lichen planus, and seborrheic dermatitis. Discuss the pathophysiology and clinical presentation of these conditions.",
+                question: "A 4-month-old infant is brought to the pediatrician for a 'rash' on his scalp. The examination reveals thick, yellow, greasy scales and crusts on the scalp. The infant does not seem to be bothered by it. The physician diagnoses the infant with seborrheic dermatitis. What is the common term for this condition in infants?",
+                options: {
+                    A: "Atopic dermatitis",
+                    B: "Cradle cap",
+                    C: "Tinea capitis",
+                    D: "Impetigo"
+                },
+                correctAnswer: "B",
+                rationale: "Seborrheic dermatitis in infants commonly presents on the scalp as an erythematous rash with greasy scales, a condition colloquially known as cradle cap.",
+                source: "'Seborrheic Dermatitis... Infants: Cradle cap' (Red, Scaly Rashes, Page 35)"
+            },
+            {
+                learningObjective: "LO 2 (Papulosquamous Diseases and The Spectrum of Eczema): Identify underlying conditions that may predispose to specific papulosquamous diseases.",
+                question: "A 19-year-old college student presents with a sudden eruption of small, drop-like, scaly red papules all over his trunk and extremities. He reports having a severe sore throat about two weeks prior to the rash appearing. A rapid strep test is positive. This presentation is most consistent with which condition?",
+                options: {
+                    A: "Pityriasis rosea",
+                    B: "Guttate psoriasis",
+                    C: "Secondary syphilis",
+                    D: "Lichen planus"
+                },
+                correctAnswer: "B",
+                rationale: "Guttate psoriasis is a variant of psoriasis characterized by the acute onset of small, 'drop-like' papules. It is frequently triggered by a preceding streptococcal infection, particularly pharyngitis.",
+                source: "'Guttate Psoriasis... Strep pharangitis? - yes' (Red, Scaly Rashes, Page 20)"
+            },
+            {
+                learningObjective: "LO 2 (Papulosquamous Diseases and The Spectrum of Eczema): Identify underlying conditions that may predispose to specific papulosquamous diseases.",
+                question: "A 42-year-old man with a history of HIV presents with a severe, flaky, erythematous rash involving his scalp, eyebrows, and nasolabial folds. He states that the rash flares with stress. This presentation is typical of a severe form of a common dermatosis that is known to be more extensive and difficult to treat in patients with HIV and other neurologic diseases. Which condition is most likely?",
+                options: {
+                    A: "Psoriasis",
+                    B: "Atopic dermatitis",
+                    C: "Seborrheic dermatitis",
+                    D: "Lichen planus"
+                },
+                correctAnswer: "C",
+                rationale: "Seborrheic dermatitis is an erythematous, greasy-scaled rash that affects seborrheic areas. It is known to be more severe and widespread in individuals with underlying conditions such as HIV/AIDS and neurologic disorders like Parkinson's disease.",
+                source: "'Seborrheic Dermatitis... AIDS, neurologic diseases' (Red, Scaly Rashes, Page 35)"
+            },
+            {
+                learningObjective: "LO 2 (Papulosquamous Diseases and The Spectrum of Eczema): Identify underlying conditions that may predispose to specific papulosquamous diseases.",
+                question: "A 50-year-old woman is being evaluated for a new diagnosis of lichen planus. As part of the workup, her physician orders serologic testing for a viral infection that has a known higher incidence in patients with this skin condition. Which of the following viral infections is most strongly associated with lichen planus?",
+                options: {
+                    A: "Human Herpesvirus 7",
+                    B: "Human Immunodeficiency Virus",
+                    C: "Hepatitis C Virus",
+                    D: "Epstein-Barr Virus"
+                },
+                correctAnswer: "C",
+                rationale: "There is a well-established association between lichen planus and Hepatitis C infection. Patients diagnosed with lichen planus, especially with erosive oral lesions, are often screened for Hepatitis C.",
+                source: "'Higher incidence in Hepatitis C' (Red, Scaly Rashes, Page 29)"
+            },
+            {
+                learningObjective: "LO 1 (Papulosquamous Diseases and The Spectrum of Eczema): Recognize and discuss the pathophysiology and clinical presentation of the various forms of eczema and develop treatment strategies.",
+                question: "A 25-year-old graduate student presents with an extremely itchy rash on her hands. The examination reveals deep-seated vesicles on the lateral aspects of her fingers, described as resembling 'tapioca pudding.' She notes that these episodes tend to occur during periods of high stress. Which form of eczema best describes this presentation?",
+                options: {
+                    A: "Atopic dermatitis",
+                    B: "Nummular eczema",
+                    C: "Dyshidrotic eczema",
+                    D: "Stasis dermatitis"
+                },
+                correctAnswer: "C",
+                rationale: "Dyshidrotic eczema (pompholyx) is characterized by pruritic, deep-seated vesicles on the hands and feet, particularly on the sides of the fingers and toes. The vesicles are often described as having a 'tapioca pudding' appearance.",
+                source: "'Dyshidrotic Eczema... “Tapioca pudding” blisters. Sides of the fingers > toes' (Red, Scaly Rashes, Page 82)"
+            },
+            {
+                learningObjective: "LO 1 (Papulosquamous Diseases and The Spectrum of Eczema): Recognize and discuss the pathophysiology and clinical presentation of the various forms of eczema and develop treatment strategies.",
+                question: "A 70-year-old man with a history of venous insufficiency presents with a chronic rash on his lower legs. The examination reveals erythema, scaling, and brownish discoloration around his ankles. He also has pitting edema of the lower extremities. Which of the following is the most likely diagnosis?",
+                options: {
+                    A: "Asteatotic eczema",
+                    B: "Stasis dermatitis",
+                    C: "Allergic contact dermatitis",
+                    D: "Nummular eczema"
+                },
+                correctAnswer: "B",
+                rationale: "Stasis dermatitis is a form of eczema that occurs on the lower legs as a result of chronic venous insufficiency and edema. It is characterized by erythema, scale, pruritus, and hemosiderin deposition (brown discoloration).",
+                source: "'Stasis Dermatitis. Venous insufficiency. Lower legs. Swelling (edema)... Brown discoloration' (Red, Scaly Rashes, Page 86)"
+            },
+            {
+                learningObjective: "LO 1 (Papulosquamous Diseases and The Spectrum of Eczema): Recognize and discuss the pathophysiology and clinical presentation of the various forms of eczema and develop treatment strategies.",
+                question: "A 12-year-old boy with a history of asthma and seasonal allergies presents with a chronic, intensely itchy rash in the creases of his elbows and behind his knees. The skin in these areas is thickened, with prominent skin markings. This skin change is a result of chronic scratching. What is the term for this thickened skin?",
+                options: {
+                    A: "Atrophy",
+                    B: "Lichenification",
+                    C: "Spongiosis",
+                    D: "Ulceration"
+                },
+                correctAnswer: "B",
+                rationale: "Atopic dermatitis ('the itch that rashes') commonly affects flexural areas (antecubital and popliteal fossae) in older children and adults. Chronic rubbing and scratching lead to lichenification, which is a thickening of the epidermis with exaggeration of skin lines.",
+                source: "'Atopic Eczema “The Itch that Rashes”... Older children, adults: Creases. The chronic stage of eczema is Lichenification.' (Red, Scaly Rashes, Pages 73, 46)"
+            },
+            {
+                learningObjective: "LO 2 (Papulosquamous Diseases and The Spectrum of Eczema): Identify circumstances including environmental factors, underlying diseases and inappropriate therapies that are likely to flare eczematous conditions.",
+                question: "A 24-year-old woman presents with a vesicular, linear rash on her forearms and legs two days after hiking in the woods. The rash is intensely pruritic. This is a classic example of an allergic contact dermatitis. What type of hypersensitivity reaction is responsible for this condition?",
+                options: {
+                    A: "Type I (IgE-mediated)",
+                    B: "Type II (Cytotoxic)",
+                    C: "Type III (Immune complex)",
+                    D: "Type IV (Delayed-type)"
+                },
+                correctAnswer: "D",
+                rationale: "Allergic contact dermatitis, such as the reaction to poison ivy, is a classic example of a Type IV delayed-type hypersensitivity reaction. It is a T-cell-mediated immune response that occurs upon re-exposure to an antigen in a sensitized individual.",
+                source: "'Allergic Contact Eczema... Type IV hypersensitivity reaction' (Red, Scaly Rashes, Page 52)"
+            },
+            {
+                learningObjective: "LO 2 (Papulosquamous Diseases and The Spectrum of Eczema): Identify circumstances including environmental factors, underlying diseases and inappropriate therapies that are likely to flare eczematous conditions.",
+                question: "A 35-year-old man was treated for a severe case of poison ivy with a 5-day course of oral prednisone. His rash improved initially but then flared dramatically a few days after he finished the medication. This phenomenon is commonly seen with inadequate treatment of severe allergic contact dermatitis. What is this clinical event called?",
+                options: {
+                    A: "Id reaction",
+                    B: "Koebner phenomenon",
+                    C: "Rebound dermatitis",
+                    D: "Tachyphylaxis"
+                },
+                correctAnswer: "C",
+                rationale: "Severe cases of allergic contact dermatitis like poison ivy often require a prolonged course of oral corticosteroids (e.g., 2-3 weeks with a taper). An inadequate or too-short course can lead to a 'rebound' flare of the dermatitis once the steroids are stopped.",
+                source: "'\"Rebound\" Poison Ivy: Inadequate course of oral corticosteroids' (Red, Scaly Rashes, Page 55)"
+            },
+            {
+                learningObjective: "LO 2 (Papulosquamous Diseases and The Spectrum of Eczema): Identify circumstances including environmental factors, underlying diseases and inappropriate therapies that are likely to flare eczematous conditions.",
+                question: "A 68-year-old woman presents with a pruritic, erythematous rash in her groin. She was recently diagnosed with a fungal infection and has been applying a high-potency topical steroid to the area for several weeks. The rash has worsened, with increased erythema and loss of the typical well-demarcated border of a fungal infection. What is the most likely diagnosis for this altered presentation?",
+                options: {
+                    A: "Inverse psoriasis",
+                    B: "Tinea incognito",
+                    C: "Stasis dermatitis",
+                    D: "Perioral dermatitis"
+                },
+                correctAnswer: "B",
+                rationale: "Tinea incognito describes a dermatophyte (fungal) infection that has been clinically altered by the application of topical corticosteroids. The steroids suppress the inflammation, making the rash less scaly and less defined, which can obscure the diagnosis and often allows the fungus to flourish.",
+                source: "'Image labeled \"Tinea incognito\" under the heading \"More Topical Steroid Side-effects.\"' (Red, Scaly Rashes, Page 68)"
+            }
+        ];
+        const quizContainer = document.getElementById('quiz-container');
+        const themeToggleButton = document.getElementById('theme-toggle-button');
+        const bodyElement = document.body;
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                bodyElement.classList.add('light-theme');
+                themeToggleButton.textContent = 'Switch to Dark Mode';
+            } else {
+                bodyElement.classList.remove('light-theme');
+                themeToggleButton.textContent = 'Switch to Light Mode';
+            }
+            localStorage.setItem('quizTheme', theme);
+        }
+
+        function loadQuiz() {
+            quizData.forEach((qData, index) => {
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+                questionBlock.id = `q${index}`;
+
+                const loText = document.createElement('div');
+                loText.classList.add('learning-objective');
+                loText.textContent = qData.learningObjective;
+                questionBlock.appendChild(loText);
+
+                const questionText = document.createElement('p');
+                questionText.classList.add('question-text');
+                questionText.innerHTML = `${index + 1}. ${qData.question}`;
+                questionBlock.appendChild(questionText);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.classList.add('options');
+                for (const optionKey in qData.options) {
+                    const optionId = `q${index}_${optionKey}`;
+                    const label = document.createElement('label');
+                    label.htmlFor = optionId;
+
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = `q${index}`;
+                    radioInput.value = optionKey;
+                    radioInput.id = optionId;
+
+                    const labelText = document.createElement('span');
+                    labelText.textContent = ` ${optionKey}. ${qData.options[optionKey]}`;
+
+                    label.appendChild(radioInput);
+                    label.appendChild(labelText);
+                    optionsDiv.appendChild(label);
+                }
+                questionBlock.appendChild(optionsDiv);
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('button-container');
+
+                const checkButton = document.createElement('button');
+                checkButton.textContent = 'Check Answer';
+                checkButton.classList.add('check-button');
+                checkButton.onclick = () => checkAnswer(index);
+                buttonContainer.appendChild(checkButton);
+                questionBlock.appendChild(buttonContainer);
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.classList.add('feedback');
+                questionBlock.appendChild(feedbackDiv);
+
+                quizContainer.appendChild(questionBlock);
+            });
+        }
+
+        function checkAnswer(questionIndex) {
+            const questionBlockElement = document.getElementById(`q${questionIndex}`);
+            const selectedRadioButton = questionBlockElement.querySelector('input[type="radio"]:checked');
+            if (!selectedRadioButton) {
+                alert("Please select an answer first.");
+                return;
+            }
+            const selectedOptionKey = selectedRadioButton.value;
+            const qData = quizData[questionIndex];
+            const feedbackDiv = questionBlockElement.querySelector('.feedback');
+            const correct = selectedOptionKey === qData.correctAnswer;
+
+            let feedbackHTML = '';
+            if (correct) {
+                feedbackHTML = `<span class="feedback-status">Correct!</span>`;
+                feedbackDiv.className = 'feedback correct';
+            } else {
+                feedbackHTML = `<span class="feedback-status">Incorrect. The correct answer is ${qData.correctAnswer}.</span>`;
+                feedbackDiv.className = 'feedback incorrect';
+            }
+
+            feedbackHTML += `<div class="feedback-rationale"><strong>Rationale:</strong> ${qData.rationale}</div>`;
+            feedbackHTML += `<div class="feedback-source"><strong>Source:</strong> ${qData.source}</div>`;
+
+            feedbackDiv.innerHTML = feedbackHTML;
+        }
+
+        themeToggleButton.addEventListener('click', () => {
+            if (bodyElement.classList.contains('light-theme')) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+            applyTheme(savedTheme);
+            loadQuiz();
+        });
+    </script>
+</body>
+</html>
